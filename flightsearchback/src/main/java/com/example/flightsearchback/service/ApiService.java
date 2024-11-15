@@ -51,10 +51,10 @@ public class ApiService {
         System.out.println("----------   ACTUALIZADO   ----------");
     }
 
-    public String obtenerVuelos() {
+    public String getAirports(String keywords) { // @TODO hacerlo con ciudades tambien
         try {
             return this.webClient.get()
-                .uri("/reference-data/locations?subType=AIRPORT&keyword=Mex&view=LIGHT")
+                .uri("/reference-data/locations?subType=AIRPORT&keyword="+keywords+"&view=LIGHT")
                 .headers(h -> h.setBearerAuth(token))
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), 
@@ -65,7 +65,7 @@ public class ApiService {
             System.out.println("----------   TOKEN INVALIDO   ----------");
             actualizarToken(); // Actualizar token si ocurre Unauthorized
             return this.webClient.get() // Reintentar con el nuevo token
-                .uri("/reference-data/locations?subType=AIRPORT&keyword=Mex&view=LIGHT")
+                .uri("/reference-data/locations?subType=AIRPORT&keyword="+keywords+"&view=LIGHT")
                 .headers(h -> h.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(String.class)

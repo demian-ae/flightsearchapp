@@ -6,6 +6,7 @@ import com.example.flightsearchback.service.ApiService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -28,9 +29,11 @@ public class ApiController {
         return apiService.obtenerToken();
     }
 
-    @GetMapping("/flights")
-    public String getFlights() {
-        return apiService.obtenerVuelos();
+    @GetMapping("/airports")
+    public String getAirports(@RequestParam(defaultValue = "") String keywords) {
+        return apiService.getAirports(keywords);
     }
+    
+
     
 }
