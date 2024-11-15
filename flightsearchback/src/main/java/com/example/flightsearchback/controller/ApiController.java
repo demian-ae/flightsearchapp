@@ -27,12 +27,12 @@ public class ApiController {
     
 
     @GetMapping("/get-token")
-    public Mono<String> getToken() {
+    public String getToken() {
         return apiService.obtenerToken();
     }
 
     @GetMapping("/flights")
-    public Mono<String> getFlights() {
+    public String getFlights() {
         return apiService.obtenerVuelos();
     }
     

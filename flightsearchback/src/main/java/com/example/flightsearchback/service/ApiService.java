@@ -29,11 +29,10 @@ public class ApiService {
         this.clientSecret = clientSecret;
     }
 
-    public Mono<String> obtenerToken() {
-
+    public String obtenerToken() {
         return this.webClient.post()
             .uri("/security/oauth2/token")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED) 
             .body(BodyInserters
                 .fromFormData("grant_type", "client_credentials")
                 .with("client_id", clientId)
@@ -43,24 +42,24 @@ public class ApiService {
             .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), 
                       ClientResponse::createException) // arroja una excepcion
             .bodyToMono(TokenResponse.class)
-            .map(TokenResponse::getAccessToken); // :: -> es para la funcion en si, no para invocarla. Map necesita una funcion como parametro
+            .map(TokenResponse::getAccessToken)
+            .block(); // :: -> es para la funcion en si, no para invocarla. Map necesita una funcion como parametro
     }
 
     public void actualizarToken() {
-        obtenerToken()
-            .doOnNext(token -> this.token = token) // Actualiza la variable `token` si se obtiene exitosamente
-            .doOnError(error -> System.err.println("Error al obtener el token: " + error.getMessage())); // Log del error
+        this.token = obtenerToken();
     }
 
-    public Mono<String> obtenerVuelos() {
+    public String obtenerVuelos() {
         actualizarToken();
-        System.out.println(" ----------------    TOKEN    ----------------:" + token);
 
         return this.webClient.get()
             .uri("/reference-data/locations?subType=AIRPORT&keyword=Mex&view=LIGHT")
+            .headers(h -> h.setBearerAuth(token))
             .retrieve()
             .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), 
                       ClientResponse::createException) // arroja una excepcion
-            .bodyToMono(String.class);
+            .bodyToMono(String.class)
+            .block();
     }
 }
