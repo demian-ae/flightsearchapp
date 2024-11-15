@@ -1,15 +1,20 @@
 package com.example.flightsearchback.service;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.example.flightsearchback.model.TokenResponse;
 
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Service
 public class ApiService {
@@ -47,19 +52,31 @@ public class ApiService {
     }
 
     public void actualizarToken() {
+        System.out.println("----------   ACTUALIZANDO TOKEN...   ----------");
         this.token = obtenerToken();
+        System.out.println("----------   ACTUALIZADO   ----------");
     }
 
     public String obtenerVuelos() {
-        actualizarToken();
-
-        return this.webClient.get()
-            .uri("/reference-data/locations?subType=AIRPORT&keyword=Mex&view=LIGHT")
-            .headers(h -> h.setBearerAuth(token))
-            .retrieve()
-            .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), 
-                      ClientResponse::createException) // arroja una excepcion
-            .bodyToMono(String.class)
-            .block();
+        try {
+            return this.webClient.get()
+                .uri("/reference-data/locations?subType=AIRPORT&keyword=Mex&view=LIGHT")
+                .headers(h -> h.setBearerAuth(token))
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), 
+                        ClientResponse::createException)
+                .bodyToMono(String.class)
+                .block();
+        } catch (WebClientResponseException.Unauthorized e) {
+            System.out.println("----------   TOKEN INVALIDO   ----------");
+            actualizarToken(); // Actualizar token si ocurre Unauthorized
+            return this.webClient.get() // Reintentar con el nuevo token
+                .uri("/reference-data/locations?subType=AIRPORT&keyword=Mex&view=LIGHT")
+                .headers(h -> h.setBearerAuth(token))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        }
     }
+
 }
