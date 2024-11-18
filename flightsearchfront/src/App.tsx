@@ -1,25 +1,17 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import logo from './images/logo-portal.png'
+
+import "./styles/main.css";
+import { SearchRoot } from './pages/SearchRoot';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React with TypeScript
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="logo">
+        <img src={logo} alt="logo" draggable={false} />
+      </div>
+      <SearchRoot />
+    </>
   );
 }
 

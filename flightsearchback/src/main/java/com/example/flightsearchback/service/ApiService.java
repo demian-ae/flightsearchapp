@@ -51,10 +51,14 @@ public class ApiService {
         System.out.println("----------   ACTUALIZADO   ----------");
     }
 
-    public String getAirports(String keywords) { // @TODO hacerlo con ciudades tambien
+    public String getAirports(String keywords, String subType, int page) { // @TODO hacerlo con ciudades tambien
+        int offset = page*10;
+        System.out.println("----------   URI   ----------");
+        System.out.println("/reference-data/locations?subType="+subType+"&page[offset]="+offset+"&keyword="+keywords);
+
         try {
             return this.webClient.get()
-                .uri("/reference-data/locations?subType=AIRPORT&keyword="+keywords+"&view=LIGHT")
+                .uri("/reference-data/locations?subType="+subType+"&page[offset]="+offset+"&keyword="+keywords)
                 .headers(h -> h.setBearerAuth(token))
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), 
