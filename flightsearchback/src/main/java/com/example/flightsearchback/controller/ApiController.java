@@ -29,7 +29,7 @@ public class ApiController {
         return apiService.obtenerToken();
     }
 
-    @GetMapping("/airports")
+    @GetMapping("/airports") 
     public String getAirports(@RequestParam(defaultValue = "") String keywords) {
         return apiService.getAirports(keywords);
     }
