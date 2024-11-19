@@ -20,6 +20,7 @@ interface Option {
     subType?: string; // Add this property
     type?: string; // Keep this optional since it's derived
     name: string;
+    iataCode: String
 }
 
 
@@ -31,7 +32,7 @@ export const SearchAutocomplete = (props: SearchAutocompleteProps) => {
     const [loading, setLoading] = useState(false)
 
     // Configure options format for proper displaying on the UI
-    const names: Option[] = options.map((i) => ({ type: i.subType, name: i.name }));
+    // const names: Option[] = options.map((i) => ({ type: i.subType, name: i.name }));
 
     // Debounce func prevents extra unwanted keystrokes, when user triggers input events 
     const debounceLoadData = useCallback(debounce(setKeyword, 1000), []);
@@ -60,6 +61,8 @@ export const SearchAutocomplete = (props: SearchAutocompleteProps) => {
                 setOptions([]);
                 setLoading(false);
             });
+
+            console.log(options.map((i) => ({ type: i.subType, name: i.name })));
 
         return () => {
             source.cancel();
@@ -91,7 +94,7 @@ export const SearchAutocomplete = (props: SearchAutocompleteProps) => {
                 setSearch('');
                 props.setSearch((p) => ({ ...p, keyword: 'a', page: 0 }));
             }}
-            options={options.map((i) => ({ type: i.subType, name: i.name }))}
+            options={options.map((i) => ({ type: i.subType, name: `(${i.iataCode}) ${i.name}` }))}
             loading={loading}
             renderInput={(params) => (
                 <TextField
@@ -103,15 +106,6 @@ export const SearchAutocomplete = (props: SearchAutocompleteProps) => {
                         setSearch(e.target.value);
                     }}
                     variant="outlined"
-                    InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                            <>
-                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                {params.InputProps.endAdornment}
-                            </>
-                        ),
-                    }}
                 />
             )}
         />

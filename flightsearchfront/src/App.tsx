@@ -1,4 +1,4 @@
-import React from 'react';
+
 import logo from './images/logo-portal.png'
 
 import "./styles/main.css";
