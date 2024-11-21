@@ -3,39 +3,31 @@ import { debounce } from 'lodash';
 import { useCallback, useEffect, useState } from 'react'
 
 import { Autocomplete } from "@mui/material";
-import { TextField, CircularProgress } from "@mui/material";
+import { TextField } from "@mui/material";
 
-
-import { getAmadeusData } from '../api/amadeus.api';
-import { Search } from '../pages/SearchRoot';
+import { getLocations } from '../api/amadeus.api';
 
 
 interface SearchAutocompleteProps {
-    search: Search
-    setSearch: React.Dispatch<React.SetStateAction<Search>>;
+    handleChoice: React.Dispatch<React.SetStateAction<string>>,
+    display: string
 }
 
-// Define the option type
 export interface Option {
-    subType: string; // Add this property
-    type: string; // Keep this optional since it's derived
+    type: string; 
+    subType: string; 
     name: string;
     iataCode: string
 }
 
-
-export const SearchAutocomplete = (props: SearchAutocompleteProps) => {
-    const [open, setOpen] = useState(false);
+export const SearchAutocomplete = ({handleChoice, display}: SearchAutocompleteProps) => {
     const [options, setOptions] = useState<Option[]>([]);
     const [search, setSearch] = useState('')
     const [keyword, setKeyword] = useState('')
     const [loading, setLoading] = useState(false)
 
-    // Configure options format for proper displaying on the UI
-    // const names: Option[] = options.map((i) => ({ type: i.subType, name: i.name }));
-
-    // Debounce func prevents extra unwanted keystrokes, when user triggers input events 
-    const debounceLoadData = useCallback(debounce(setKeyword, 1000), []);
+        // Debounce func prevents extra unwanted keystrokes, when user triggers input events 
+    const debounceLoadData = useCallback(debounce(setKeyword, 500), []);
 
     // Trigger debounced keyword update when search changes
     useEffect(() => {
@@ -45,61 +37,54 @@ export const SearchAutocomplete = (props: SearchAutocompleteProps) => {
     // Fetch data based on the keyword
     useEffect(() => {
         setLoading(true);
-        const { out, source } = getAmadeusData({ ...props.search, page: 0, keyword });
+        const { out, source } = getLocations(keyword);
 
         out
             .then((res) => {
                 if (!res.data.code) {
-                    setOptions(res.data.data);
+                    setOptions(res.data);
                 }
-                setLoading(false);
             })
             .catch((err) => {
                 if (!axios.isCancel(err)) {
                     console.error(err);
                 }
                 setOptions([]);
-                setLoading(false);
+            })
+            .finally(()=>{
+                setLoading(false)
             });
 
-            console.log(options.map((i) => ({ type: i.subType, name: i.name })));
 
         return () => {
             source.cancel();
         };
     }, [keyword]);
 
-    // Destructure props for convenience
-    const { city, airport } = props.search;
-
-    // Determine label based on search criteria
-    const label = city && airport ? "City and Airports" : city ? "City" : airport ? "Airports" : "";
-
+    useEffect(() => {
+    }, [options])
+    
 
     return (
         <Autocomplete
-            id="search-autocomplete"
-            style={{ width: 300, marginBottom: '1rem' }}
-            open={open}
-            onOpen={() => setOpen(true)}
-            onClose={() => setOpen(false)}
-            getOptionLabel={(option) => option.name}
-            
+            id={"search-autocomplete-"+display}
+            style={{ width: 300}}
+            options={options}
+            getOptionLabel={(option) => (`(${option.iataCode}) ${option.name}`)}
             onChange={(e, value) => {
                 if (value && value.name) {
-                    props.setSearch((p) => ({ ...p, keyword: value.name, page: 0 }));
+                    handleChoice(value.iataCode);
                     setSearch(value.name);
                     return;
                 }
                 setSearch('');
-                props.setSearch((p) => ({ ...p, keyword: 'a', page: 0 }));
+                handleChoice('');
             }}
-            options={options.map((i) => ({ type: i.subType, name: `(${i.iataCode}) ${i.name}` }))}
             loading={loading}
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    label={label}
+                    label={display}
                     fullWidth
                     onChange={(e) => {
                         e.preventDefault();

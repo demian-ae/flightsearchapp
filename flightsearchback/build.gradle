@@ -30,8 +30,10 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	// https://mvnrepository.com/artifact/com.google.code.gson/gson
+	implementation 'com.google.code.gson:gson:2.10.1'
+	// https://mvnrepository.com/artifact/com.amadeus/amadeus-java    
+	implementation 'com.amadeus:amadeus-java:10.0.0'
 }
 
 tasks.named('test') {
