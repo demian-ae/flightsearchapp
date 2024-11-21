@@ -16,11 +16,11 @@ interface SearchAutocompleteProps {
 }
 
 // Define the option type
-interface Option {
-    subType?: string; // Add this property
-    type?: string; // Keep this optional since it's derived
+export interface Option {
+    subType: string; // Add this property
+    type: string; // Keep this optional since it's derived
     name: string;
-    iataCode: String
+    iataCode: string
 }
 
 
@@ -84,7 +84,7 @@ export const SearchAutocomplete = (props: SearchAutocompleteProps) => {
             onOpen={() => setOpen(true)}
             onClose={() => setOpen(false)}
             getOptionLabel={(option) => option.name}
-            isOptionEqualToValue={(option, value) => option.name === value.name && option.type === value.type}
+            
             onChange={(e, value) => {
                 if (value && value.name) {
                     props.setSearch((p) => ({ ...p, keyword: value.name, page: 0 }));

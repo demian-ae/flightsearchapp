@@ -4,6 +4,7 @@ import axios from "axios";
 import { SearchAutocomplete } from "../components/SearchAutocomplete";
 import { SearchCheckboxes } from "../components/SearchCheckboxes";
 import { SearchTable } from "../components/SearchTable";
+import { SearchAutocomplete2 } from "../components/SearchAutocomplete2";
 
 
 export interface Search {
@@ -87,7 +88,8 @@ export const SearchRoot = () => {
   return (
     <div className="container">
       <div className="search-panel">
-        <SearchAutocomplete search={search} setSearch={setSearch} />
+        <SearchAutocomplete2 />
+        {/* <SearchAutocomplete search={search} setSearch={setSearch} /> */}
         <SearchCheckboxes search={search} setSearch={setSearch} />
       </div>
       <SearchTable dataSource={dataSource} search={search} setSearch={setSearch} loading={loading} />
