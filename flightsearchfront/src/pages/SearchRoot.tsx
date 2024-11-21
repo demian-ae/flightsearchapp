@@ -6,6 +6,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import { currencyCodes } from "../utils/CurrencyCodes";
+import { getFlightOffers } from "../api/amadeus.api";
+import axios from "axios";
 
 const today = dayjs();
 
@@ -16,7 +18,36 @@ export const SearchRoot = () => {
 	const [arrivalDate, setArrivalDate] = useState<Dayjs | null>(null);
 	const [passengers, setPassengers] = useState(1);
 	const [currency, setCurrency] = useState<string>('MXN');
-	const [nonStops, setNonStops] = useState(false);
+	const [nonStop, setNonStop] = useState(false);
+	
+	const handleSearch = () => {
+		if (!origin || !destination || !departureDate) {
+			alert('Please fill in all required fields.');
+			return;
+		}
+
+		const { out, source } = getFlightOffers({
+			origin,
+			destination,
+			departDate: departureDate.format('YYYY-MM-DD'),
+			returnDate: arrivalDate ? arrivalDate.format('YYYY-MM-DD') : undefined,
+			currencyCode: currency,
+			adults: passengers,
+			nonStop,
+		});
+
+		out.then(response => {
+			console.log('Flight offers:', response.data);
+			// Handle the response data, e.g., update state or display results
+		}).catch(error => {
+			if (axios.isCancel(error)) {
+				console.log('Request canceled:', error.message);
+			} else {
+				console.error('Error fetching flight offers:', error);
+			}
+		});
+	};
+
 
 	const setPassengersFilter = (n: number) => {
 		if (n < 1) {
@@ -45,7 +76,6 @@ export const SearchRoot = () => {
 	useEffect(() => {
 		console.log('Currenncy code:', currency);
 	}, [currency])
-
 
 
 
@@ -127,16 +157,19 @@ export const SearchRoot = () => {
 					label="Non-stops"
 					control={
 						<Checkbox
-							checked={nonStops}
+							checked={nonStop}
 							onChange={(e) => {
-								setNonStops(e.target.checked)
+								setNonStop(e.target.checked)
 							}}
 						/>
 					}
 				/>
 			</Box>
 			<Box sx={{ mx: 1 }}>
-				<Button variant="contained">
+				<Button 
+					variant="contained"
+					onClick={(e) => handleSearch()}
+				>
 					Search
 				</Button>
 			</Box>

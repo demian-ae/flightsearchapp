@@ -1,10 +1,5 @@
 import axios, { AxiosResponse, CancelTokenSource } from "axios";
 
-// Define a type for the parameters accepted by the function
-interface AmadeusParams {
-	keyword?: string;
-}
-
 // Define the return type for the function
 interface GetAmadeusDataResult {
 	out: Promise<AxiosResponse>;
@@ -36,3 +31,32 @@ export const getLocations = (keywords: string): GetAmadeusDataResult => {
 
 	return { out, source }
 };
+
+export const getFlightOffers = (
+	params: {
+	  origin: string;
+	  destination: string;
+	  departDate: string;
+	  currencyCode: string;
+	  adults: number;
+	  nonStop: boolean;
+	  returnDate?: string;
+	}
+  ): GetAmadeusDataResult => {
+	const source = axios.CancelToken.source();
+	
+	const query = new URLSearchParams({
+	  origin: params.origin,
+	  destination: params.destination,
+	  departDate: params.departDate,
+	  currencyCode: params.currencyCode,
+	  adults: params.adults.toString(),
+	  nonStop: params.nonStop.toString(),
+	  ...(params.returnDate ? { returnDate: params.returnDate } : {}),
+	}).toString();
+  
+	const out = axios.get(`/flights?${query}`, { cancelToken: source.token });
+  
+	return { out, source };
+  };
+  
