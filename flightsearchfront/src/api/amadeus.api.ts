@@ -21,7 +21,7 @@ export const getLocations = (keywords: string): GetAmadeusDataResult => {
 
 	// GET request with all params we need
 	const out = axios.get(
-		`/airports?keywords=${searchQuery}`,
+		`/airports?keyword=${searchQuery}`,
 		{
 			cancelToken: source.token
 		}

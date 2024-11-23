@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amadeus.exceptions.ResponseException;
-import com.amadeus.resources.FlightOfferSearch;
-import com.amadeus.resources.Location;
+import com.example.flightsearchback.model.FlightEndPoint;
+import com.example.flightsearchback.model.FlightOffer;
+import com.example.flightsearchback.model.Location;
 import com.example.flightsearchback.service.AmadeusAPIService;
 
 @RestController
@@ -26,18 +26,19 @@ public class ApiController {
     }
 
     @GetMapping("/airports")
-    public ResponseEntity<Location[]> getAirports(
-            @RequestParam(required = true) String keywords) {
+    public ResponseEntity<?> getAirports(
+            @RequestParam(required = true) String keyword) {
         try {
-            Location[] resp = apiService.getLocations(keywords);
+            Location[] resp = apiService.getLocations(keyword);
             return ResponseEntity.ok(resp);
-        } catch (ResponseException e) {
-            return ResponseEntity.internalServerError().body(null);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @GetMapping("/flights")
-    public ResponseEntity<FlightOfferSearch[]> getFlightOffers(
+    // public ResponseEntity<FlightOfferSearch[]> getFlightOffers(
+    public ResponseEntity<?> getFlightOffers(
             @RequestParam(required = true) String origin,
             @RequestParam(required = true) String destination,
             @RequestParam(required = true) String departDate,
@@ -46,11 +47,13 @@ public class ApiController {
             @RequestParam(required = true) int adults,
             @RequestParam(required = true) boolean nonStop) {
         try {
-            FlightOfferSearch[] resp = apiService.getFlightOffers(origin, destination, departDate, returnDate, adults,
-                    currencyCode, nonStop);
+            // FlightOfferSearch[] resp = apiService.getFlightOffers(origin, destination, departDate, returnDate, adults,
+            //         currencyCode, nonStop);
+            FlightOffer[] resp = apiService.getFlightOffers(origin, destination, departDate, returnDate, currencyCode,
+                    adults, nonStop);
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(null);
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }

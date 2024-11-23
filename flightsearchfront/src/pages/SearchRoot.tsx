@@ -19,9 +19,10 @@ export const SearchRoot = () => {
 	const [passengers, setPassengers] = useState(1);
 	const [currency, setCurrency] = useState<string>('MXN');
 	const [nonStop, setNonStop] = useState(false);
+	const [validForm, setValidForm] = useState(false);
 	
 	const handleSearch = () => {
-		if (!origin || !destination || !departureDate) {
+		if (!origin || !destination || !departureDate || !currency) {
 			alert('Please fill in all required fields.');
 			return;
 		}
@@ -59,23 +60,11 @@ export const SearchRoot = () => {
 		}
 	}
 
-	useEffect(() => {
-		console.log("origin:", origin);
-		console.log("destination:", destination);
-	}, [origin, destination]);
 
 	useEffect(() => {
-		console.log('departure date:', departureDate?.format('YYYY-MM-DD'));
-		console.log('arrival date:', arrivalDate?.format('YYYY-MM-DD'));
-	}, [departureDate, arrivalDate])
-
-	useEffect(() => {
-		console.log('Passengers: ', passengers)
-	}, [passengers])
-
-	useEffect(() => {
-		console.log('Currenncy code:', currency);
-	}, [currency])
+		setValidForm(!origin || !destination || !departureDate || !currency)
+	}, [origin, destination, departureDate, currency]);
+	
 
 
 
@@ -83,7 +72,6 @@ export const SearchRoot = () => {
 		<Box
 			sx={{
 				display: "flex",
-				bgcolor: "#f5f5f5",
 				p: 2,
 				alignItems: "center",
 				justifyContent: "center"
@@ -169,6 +157,7 @@ export const SearchRoot = () => {
 				<Button 
 					variant="contained"
 					onClick={(e) => handleSearch()}
+					disabled={validForm}
 				>
 					Search
 				</Button>
