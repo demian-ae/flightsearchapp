@@ -14,6 +14,7 @@ public class FlightOffer {
     private List<Itinerary> itineraries;
     private Price price;
     private String[] validatingAirlineCodes;
+    private TravelerPricing[] travelerPricings;
 
     @Getter
     public static class Itinerary {

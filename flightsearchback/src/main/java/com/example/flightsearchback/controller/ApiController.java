@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.flightsearchback.model.FlightEndPoint;
+import com.example.flightsearchback.model.Airline;
 import com.example.flightsearchback.model.FlightOffer;
 import com.example.flightsearchback.model.Location;
 import com.example.flightsearchback.service.AmadeusAPIService;
@@ -27,9 +27,11 @@ public class ApiController {
 
     @GetMapping("/airports")
     public ResponseEntity<?> getAirports(
-            @RequestParam(required = true) String keyword) {
+            @RequestParam(required = true) String keyword,
+            @RequestParam(defaultValue = "AIRPORT") String subType
+            ) {
         try {
-            Location[] resp = apiService.getLocations(keyword);
+            Location[] resp = apiService.getLocations(keyword, subType);
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -51,6 +53,18 @@ public class ApiController {
             //         currencyCode, nonStop);
             FlightOffer[] resp = apiService.getFlightOffers(origin, destination, departDate, returnDate, currencyCode,
                     adults, nonStop);
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/airlines")
+    public ResponseEntity<?> getAirports(
+            @RequestParam(required = true) String airlineCodes // separated by coma, eg: F9,VB
+            ) {
+        try {
+            Airline[] resp = apiService.getAirline(airlineCodes);
             return ResponseEntity.ok(resp);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

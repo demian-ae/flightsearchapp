@@ -2,22 +2,17 @@ package com.example.flightsearchback.service;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.management.RuntimeErrorException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.example.flightsearchback.model.Airline;
 import com.example.flightsearchback.model.FlightOffer;
 import com.example.flightsearchback.model.Location;
 import com.example.flightsearchback.model.TokenResponse;
@@ -102,13 +97,14 @@ public class AmadeusAPIService {
         }
     }
 
-    public Location[] getLocations(String keywords) {
+    public Location[] getLocations(String keywords, String subType) {
         try {
+            System.out.println("get locations: "+keywords+","+subType);
             HttpHeaders headers = createHeaders();
             HttpEntity<String> entity = new HttpEntity<>(headers);
-
             ResponseEntity<JsonNode> response = restTemplate.exchange(
-                    baseUrl + "/v1/reference-data/locations?subType=AIRPORT,CITY&keyword=" + keywords + "&view=LIGHT",
+                    baseUrl + "/v1/reference-data/locations?subType=" + subType + "&keyword=" + keywords
+                            + "&view=LIGHT",
                     HttpMethod.GET, entity, JsonNode.class);
 
             if (response.hasBody()) {
@@ -119,7 +115,7 @@ public class AmadeusAPIService {
         } catch (HttpClientErrorException.Unauthorized e) {
             // Refresh token on 401 error and retry
             refreshToken();
-            return getLocations(keywords);
+            return getLocations(keywords, subType);
         } catch (Exception e) {
             throw new RuntimeException("Failed to retrieve API data", e);
         }
@@ -146,8 +142,7 @@ public class AmadeusAPIService {
                     .queryParam("nonStop", nonStop)
                     .queryParam("max", 10);
 
-
-            if(!returnDate.isBlank()){
+            if (!returnDate.isBlank()) {
                 uriBuilder.queryParam("returnDate", returnDate);
             }
 
@@ -166,7 +161,37 @@ public class AmadeusAPIService {
         } catch (HttpClientErrorException.Unauthorized e) {
             // Refresh token on 401 error and retry
             refreshToken();
-            return getFlightOffers(origin,destination,departDate,returnDate,currencyCode,adults,nonStop);
+            return getFlightOffers(origin, destination, departDate, returnDate, currencyCode, adults, nonStop);
+        } catch (Exception e) {
+            System.out.print(e);
+            throw new RuntimeException("Failed to retrieve API data", e);
+        }
+    }
+
+    public Airline[] getAirline(String airlineCodes) {
+        try {
+            System.out.println("get airline: " + airlineCodes);
+            HttpHeaders headers = createHeaders();
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + "/v1/reference-data/airlines")
+                    .queryParam("airlineCodes", airlineCodes)
+                    .build()
+                    .toUri();
+
+            ResponseEntity<JsonNode> response = restTemplate.exchange(
+                    uri,
+                    HttpMethod.GET, entity, JsonNode.class);
+
+            if (response.hasBody()) {
+                return objectMapper.treeToValue(response.getBody().get("data"), Airline[].class);
+            } else {
+                throw new RuntimeException("no data");
+            }
+        } catch (HttpClientErrorException.Unauthorized e) {
+            // Refresh token on 401 error and retry
+            refreshToken();
+            return getAirline(airlineCodes);
         } catch (Exception e) {
             System.out.print(e);
             throw new RuntimeException("Failed to retrieve API data", e);

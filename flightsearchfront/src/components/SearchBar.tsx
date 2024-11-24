@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { SearchAutocomplete } from "../components/SearchAutocomplete";
-import { Autocomplete, Box, Button, Checkbox, FormControl, FormControlLabel, FormLabel, Input, TextField, Typography } from "@mui/material";
+import { SearchAutocomplete } from "./SearchAutocomplete";
+import { Autocomplete, Box, Button, Checkbox, FormControl, FormControlLabel, TextField } from "@mui/material";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -8,10 +8,17 @@ import dayjs, { Dayjs } from 'dayjs';
 import { currencyCodes } from "../utils/CurrencyCodes";
 import { getFlightOffers } from "../api/amadeus.api";
 import axios from "axios";
+import { FlightOffer } from "../models/FlightOffer";
 
 const today = dayjs();
 
-export const SearchRoot = () => {
+interface SearchBarProps {
+	setFlighOfferResults: React.Dispatch<React.SetStateAction<FlightOffer[] | null>>,
+	setError: React.Dispatch<React.SetStateAction<boolean>>,
+	setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const SearchBar = ({ setFlighOfferResults, setError, setIsLoading }: SearchBarProps) => {
 	const [origin, setOrigin] = useState('');
 	const [destination, setDestination] = useState('');
 	const [departureDate, setDepartureDate] = useState<Dayjs | null>(null);
@@ -20,14 +27,15 @@ export const SearchRoot = () => {
 	const [currency, setCurrency] = useState<string>('MXN');
 	const [nonStop, setNonStop] = useState(false);
 	const [validForm, setValidForm] = useState(false);
-	
+
 	const handleSearch = () => {
+		setIsLoading(true);
 		if (!origin || !destination || !departureDate || !currency) {
 			alert('Please fill in all required fields.');
 			return;
 		}
 
-		const { out, source } = getFlightOffers({
+		const { out } = getFlightOffers({
 			origin,
 			destination,
 			departDate: departureDate.format('YYYY-MM-DD'),
@@ -39,13 +47,18 @@ export const SearchRoot = () => {
 
 		out.then(response => {
 			console.log('Flight offers:', response.data);
-			// Handle the response data, e.g., update state or display results
+			setFlighOfferResults(response.data);
+			setError(false);
 		}).catch(error => {
 			if (axios.isCancel(error)) {
 				console.log('Request canceled:', error.message);
 			} else {
 				console.error('Error fetching flight offers:', error);
 			}
+			setFlighOfferResults(null);
+			setError(true);
+		}).finally(() => { 
+			setIsLoading(false); 
 		});
 	};
 
@@ -64,7 +77,7 @@ export const SearchRoot = () => {
 	useEffect(() => {
 		setValidForm(!origin || !destination || !departureDate || !currency)
 	}, [origin, destination, departureDate, currency]);
-	
+
 
 
 
@@ -154,7 +167,7 @@ export const SearchRoot = () => {
 				/>
 			</Box>
 			<Box sx={{ mx: 1 }}>
-				<Button 
+				<Button
 					variant="contained"
 					onClick={(e) => handleSearch()}
 					disabled={validForm}
