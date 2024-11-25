@@ -15,7 +15,7 @@ import com.example.flightsearchback.service.AmadeusAPIService;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "http://localhost:8080") // Allow requests from this origin
+@CrossOrigin(origins = "*") // Allow requests from this origin
 public class ApiController {
     @Autowired
     private AmadeusAPIService apiService;
