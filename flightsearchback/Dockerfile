@@ -1,9 +1,9 @@
-FROM openjdk:21
+FROM eclipse-temurin:21
 
 WORKDIR /app
 
-COPY build/libs/*.jar app.jar
+COPY . .
 
 EXPOSE 8081
 
-CMD ["java", "-jar", "app.jar"]
+CMD ["./gradlew", "bootRun"]
