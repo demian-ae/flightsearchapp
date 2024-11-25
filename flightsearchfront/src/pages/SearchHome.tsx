@@ -19,7 +19,13 @@ export const SearchHome = ({setCurrFlighOffer, searchQueryParams, setSearchQuery
     
     return (
         <div>
-            <SearchBar setFlighOfferResults={setFlighOfferResults} setError={setError} setIsLoading={setIsLoading} searchQueryParams={searchQueryParams} setSearchQueryParams={setSearchQueryParams}/>
+            <SearchBar 
+                setFlighOfferResults={setFlighOfferResults} 
+                setError={setError} 
+                setIsLoading={setIsLoading} 
+                searchQueryParams={searchQueryParams} 
+                setSearchQueryParams={setSearchQueryParams}
+            />
             <FlighOfferResultsList flighOfferResults={flighOfferResults} isLoading={isLoading} isError={isError} setCurrFlighOffer={setCurrFlighOffer}/>
         </div>
     )

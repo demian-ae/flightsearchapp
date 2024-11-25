@@ -51,8 +51,8 @@ export const SearchBar = ({ setFlighOfferResults, setError, setIsLoading, search
 		setSearchQueryParams(aux)
 
 		const { out } = getFlightOffers({
-			origin,
-			destination,
+			origin: origin? origin.iataCode : '',
+			destination: destination? destination.iataCode: '',
 			departDate: departureDate.format('YYYY-MM-DD'),
 			returnDate: arrivalDate ? arrivalDate.format('YYYY-MM-DD') : undefined,
 			currencyCode: currency,

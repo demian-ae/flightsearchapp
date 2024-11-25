@@ -17,8 +17,8 @@ function App() {
 	const [currFlighOffer, setCurrFlighOffer] = useState<FlightOffer | undefined>(undefined);
 
 	const [searchQueryParams, setSearchQueryParams] = useState<SearchQueryParams>({
-		origin: '',
-		destination: '',
+		origin: null,
+		destination: null,
 		departureDate: null,
 		arrivalDate: null,
 		passengers: 1,

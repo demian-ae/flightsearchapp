@@ -10,18 +10,12 @@ import { AmadeusLocation } from '../models/AmadeusLocation';
 
 
 interface SearchAutocompleteProps {
-    handleChoice: React.Dispatch<React.SetStateAction<string>>,
+    handleChoice: React.Dispatch<React.SetStateAction<AmadeusLocation | null>>,
     display: string,
-    value: string
+    value: AmadeusLocation | null
 }
 
 export const SearchAutocomplete = ({ handleChoice, display, value }: SearchAutocompleteProps) => {
-    const [currValue, setCurrValue] = useState<AmadeusLocation>({
-        type: '',
-        subType: '',
-        name: '',
-        iataCode: value
-    })
     const [options, setOptions] = useState<AmadeusLocation[]>([]);
     const [search, setSearch] = useState('')
     const [keyword, setKeyword] = useState('')
@@ -66,18 +60,18 @@ export const SearchAutocomplete = ({ handleChoice, display, value }: SearchAutoc
     return (
         <Autocomplete
             id={"search-autocomplete-" + display}
-            value={currValue}
+            value={value}
             style={{ width: 300 }}
             options={options}
             getOptionLabel={(option) => (`(${option.iataCode}) ${option.name}`)}
             onChange={(e, value) => {
                 if (value && value.name) {
-                    handleChoice(value.iataCode);
+                    handleChoice(value);
                     setSearch(value.name);
                     return;
                 }
                 setSearch('');
-                handleChoice('');
+                handleChoice(null);
             }}
             loading={loading}
             renderInput={(params) => (

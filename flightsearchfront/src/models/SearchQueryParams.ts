@@ -1,8 +1,9 @@
 import { Dayjs } from "dayjs";
+import { AmadeusLocation } from "./AmadeusLocation";
 
 export interface SearchQueryParams { 
-	origin: string,
-	destination: string,
+	origin: AmadeusLocation | null,
+	destination: AmadeusLocation | null,
 	departureDate: Dayjs | null,
 	arrivalDate: Dayjs | null,
 	passengers: number, 
