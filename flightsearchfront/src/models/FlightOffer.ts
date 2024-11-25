@@ -54,7 +54,7 @@ interface Price {
 	grandTotal: string;
 }
 
-interface TravelerPricing {
+export interface TravelerPricing {
 	travelerId: string;
 	fareOption: string;
 	travelerType: string;
@@ -69,7 +69,7 @@ interface TravelerPrice {
 	base: string;
 }
 
-interface FareDetail {
+export interface FareDetail {
 	segmentId: string;
 	cabin: string;
 	fareBasis: string;
@@ -207,7 +207,35 @@ export const flightOfferExample: FlightOffer = {
 			},
 			fareDetailsBySegment: [
 				{
-					segmentId: "5",
+					segmentId: "2",
+					cabin: "ECONOMY",
+					fareBasis: "U07PE5P",
+					brandedFare: "ECO",
+					brandedFareLabel: "STANDARD",
+					includedCheckedBags: null,
+					amenities: [
+						{
+							description: "UPTO100LB 45KG BAGGAGE",
+							amenityType: "BAGGAGE",
+							amenityProvider: {
+								name: "BrandedFare"
+							},
+							chargeable: false
+						},
+						{
+							description: "FIRST CHECKED BAG",
+							amenityType: "BAGGAGE",
+							amenityProvider: {
+								name: "BrandedFare"
+							},
+							chargeable: false
+						},
+						// Más objetos de amenidad...
+					],
+					class: "U"
+				},
+				{
+					segmentId: "13",
 					cabin: "ECONOMY",
 					fareBasis: "U07PE5P",
 					brandedFare: "ECO",
@@ -235,6 +263,34 @@ export const flightOfferExample: FlightOffer = {
 					class: "U"
 				},
 				// Más objetos de FareDetailsBySegment...
+				{
+					segmentId: "14",
+					cabin: "ECONOMY",
+					fareBasis: "U07PE5P",
+					brandedFare: "ECO",
+					brandedFareLabel: "STANDARD",
+					includedCheckedBags: null,
+					amenities: [
+						{
+							description: "UPTO100LB 45KG BAGGAGE",
+							amenityType: "BAGGAGE",
+							amenityProvider: {
+								name: "BrandedFare"
+							},
+							chargeable: false
+						},
+						{
+							description: "FIRST CHECKED BAG",
+							amenityType: "BAGGAGE",
+							amenityProvider: {
+								name: "BrandedFare"
+							},
+							chargeable: false
+						},
+						// Más objetos de amenidad...
+					],
+					class: "U"
+				},
 			]
 		},
 		{
@@ -248,7 +304,35 @@ export const flightOfferExample: FlightOffer = {
 			},
 			fareDetailsBySegment: [
 				{
-					segmentId: "5",
+					segmentId: "2",
+					cabin: "ECONOMY",
+					fareBasis: "U07PE5P",
+					brandedFare: "ECO",
+					brandedFareLabel: "STANDARD",
+					includedCheckedBags: null,
+					amenities: [
+						{
+							description: "UPTO100LB 45KG BAGGAGE",
+							amenityType: "BAGGAGE",
+							amenityProvider: {
+								name: "BrandedFare"
+							},
+							chargeable: false
+						},
+						{
+							description: "FIRST CHECKED BAG",
+							amenityType: "BAGGAGE",
+							amenityProvider: {
+								name: "BrandedFare"
+							},
+							chargeable: false
+						},
+						// Más objetos de amenidad...
+					],
+					class: "U"
+				},
+				{
+					segmentId: "13",
 					cabin: "ECONOMY",
 					fareBasis: "U07PE5P",
 					brandedFare: "ECO",
@@ -276,6 +360,34 @@ export const flightOfferExample: FlightOffer = {
 					class: "U"
 				},
 				// Más objetos de FareDetailsBySegment...
+				{
+					segmentId: "14",
+					cabin: "ECONOMY",
+					fareBasis: "U07PE5P",
+					brandedFare: "ECO",
+					brandedFareLabel: "STANDARD",
+					includedCheckedBags: null,
+					amenities: [
+						{
+							description: "UPTO100LB 45KG BAGGAGE",
+							amenityType: "BAGGAGE",
+							amenityProvider: {
+								name: "BrandedFare"
+							},
+							chargeable: false
+						},
+						{
+							description: "FIRST CHECKED BAG",
+							amenityType: "BAGGAGE",
+							amenityProvider: {
+								name: "BrandedFare"
+							},
+							chargeable: false
+						},
+						// Más objetos de amenidad...
+					],
+					class: "U"
+				},
 			]
 		}
 	]

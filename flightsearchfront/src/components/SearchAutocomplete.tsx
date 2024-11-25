@@ -6,27 +6,28 @@ import { Autocomplete } from "@mui/material";
 import { TextField } from "@mui/material";
 
 import { getLocations } from '../api/amadeus.api';
+import { AmadeusLocation } from '../models/AmadeusLocation';
 
 
 interface SearchAutocompleteProps {
     handleChoice: React.Dispatch<React.SetStateAction<string>>,
-    display: string
+    display: string,
+    value: string
 }
 
-export interface Option {
-    type: string; 
-    subType: string; 
-    name: string;
-    iataCode: string
-}
-
-export const SearchAutocomplete = ({handleChoice, display}: SearchAutocompleteProps) => {
-    const [options, setOptions] = useState<Option[]>([]);
+export const SearchAutocomplete = ({ handleChoice, display, value }: SearchAutocompleteProps) => {
+    const [currValue, setCurrValue] = useState<AmadeusLocation>({
+        type: '',
+        subType: '',
+        name: '',
+        iataCode: value
+    })
+    const [options, setOptions] = useState<AmadeusLocation[]>([]);
     const [search, setSearch] = useState('')
     const [keyword, setKeyword] = useState('')
     const [loading, setLoading] = useState(false)
 
-        // Debounce func prevents extra unwanted keystrokes, when user triggers input events 
+    // Debounce func prevents extra unwanted keystrokes, when user triggers input events 
     const debounceLoadData = useCallback(debounce(setKeyword, 500), []);
 
     // Trigger debounced keyword update when search changes
@@ -51,7 +52,7 @@ export const SearchAutocomplete = ({handleChoice, display}: SearchAutocompletePr
                 }
                 setOptions([]);
             })
-            .finally(()=>{
+            .finally(() => {
                 setLoading(false)
             });
 
@@ -61,14 +62,12 @@ export const SearchAutocomplete = ({handleChoice, display}: SearchAutocompletePr
         };
     }, [keyword]);
 
-    useEffect(() => {
-    }, [options])
-    
 
     return (
         <Autocomplete
-            id={"search-autocomplete-"+display}
-            style={{ width: 300}}
+            id={"search-autocomplete-" + display}
+            value={currValue}
+            style={{ width: 300 }}
             options={options}
             getOptionLabel={(option) => (`(${option.iataCode}) ${option.name}`)}
             onChange={(e, value) => {

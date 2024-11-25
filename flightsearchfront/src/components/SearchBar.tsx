@@ -9,23 +9,26 @@ import { currencyCodes } from "../utils/CurrencyCodes";
 import { getFlightOffers } from "../api/amadeus.api";
 import axios from "axios";
 import { FlightOffer } from "../models/FlightOffer";
+import { SearchQueryParams } from "../models/SearchQueryParams";
 
 const today = dayjs();
 
 interface SearchBarProps {
 	setFlighOfferResults: React.Dispatch<React.SetStateAction<FlightOffer[] | null>>,
 	setError: React.Dispatch<React.SetStateAction<boolean>>,
-	setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+	setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+	searchQueryParams: SearchQueryParams,
+	setSearchQueryParams: React.Dispatch<React.SetStateAction<SearchQueryParams>>
 }
 
-export const SearchBar = ({ setFlighOfferResults, setError, setIsLoading }: SearchBarProps) => {
-	const [origin, setOrigin] = useState('');
-	const [destination, setDestination] = useState('');
-	const [departureDate, setDepartureDate] = useState<Dayjs | null>(null);
-	const [arrivalDate, setArrivalDate] = useState<Dayjs | null>(null);
-	const [passengers, setPassengers] = useState(1);
-	const [currency, setCurrency] = useState<string>('MXN');
-	const [nonStop, setNonStop] = useState(false);
+export const SearchBar = ({ setFlighOfferResults, setError, setIsLoading, searchQueryParams, setSearchQueryParams }: SearchBarProps) => {
+	const [origin, setOrigin] = useState(searchQueryParams.origin);
+	const [destination, setDestination] = useState(searchQueryParams.destination);
+	const [departureDate, setDepartureDate] = useState<Dayjs | null>(searchQueryParams.departureDate);
+	const [arrivalDate, setArrivalDate] = useState<Dayjs | null>(searchQueryParams.arrivalDate);
+	const [passengers, setPassengers] = useState(searchQueryParams.passengers);
+	const [currency, setCurrency] = useState<string>(searchQueryParams.currency);
+	const [nonStop, setNonStop] = useState(searchQueryParams.nonStop);
 	const [validForm, setValidForm] = useState(false);
 
 	const handleSearch = () => {
@@ -34,6 +37,18 @@ export const SearchBar = ({ setFlighOfferResults, setError, setIsLoading }: Sear
 			alert('Please fill in all required fields.');
 			return;
 		}
+
+		const aux = {
+			origin: origin, 
+			destination: destination,
+			departureDate: departureDate,
+			arrivalDate: arrivalDate,
+			passengers: passengers,
+			currency: currency,
+			nonStop: nonStop
+		}
+		console.log(aux)
+		setSearchQueryParams(aux)
 
 		const { out } = getFlightOffers({
 			origin,
@@ -94,10 +109,10 @@ export const SearchBar = ({ setFlighOfferResults, setError, setIsLoading }: Sear
 
 			</FormControl>
 			<Box sx={{ mx: 1 }}>
-				<SearchAutocomplete handleChoice={setOrigin} display={'Origin'} />
+				<SearchAutocomplete handleChoice={setOrigin} display={'Origin'} value={origin}/>
 			</Box>
 			<Box sx={{ mx: 1 }}>
-				<SearchAutocomplete handleChoice={setDestination} display={'Destination'} />
+				<SearchAutocomplete handleChoice={setDestination} display={'Destination'} value={destination}/>
 			</Box>
 			<Box sx={{ mx: 1 }}>
 				<LocalizationProvider dateAdapter={AdapterDayjs}>
