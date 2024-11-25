@@ -3,21 +3,16 @@ import { Itinerary, Segment } from "../models/FlightOffer"
 import { format } from 'date-fns'
 import { useEffect, useState } from "react"
 import { getAirlines, getAirport } from "../api/amadeus.api"
-import { Option } from "./SearchAutocomplete"
 import axios from "axios"
 import { Airline } from "../models/Airline"
+import { LayoverInfo } from "../models/LayoverInfo"
 
 interface ItineraryInfoProps {
 	itinerary: Itinerary
 }
 
-interface LayoverInfo {
-	iataCode: string,
-	duration: string
-}
-
-interface AirlinesInfo {
-	carrier: string,
+interface AirlinesInfo { // can be the code or the full name
+	carrier: string, 
 	operating: string | null
 }
 
@@ -66,12 +61,13 @@ const calculateLayovers = (segments: Segment[]): LayoverInfo[] => {
 	return layoverInfos;
 };
 
-const getAirLinesCodes = (firstSegment: Segment): string => {
-	let codes = firstSegment.carrierCode;
+const getAirLinesCodes = (firstSegment: Segment): AirlinesInfo => {
+	const carrier = firstSegment.carrierCode;
+	let operating = null;
 	if (firstSegment.operating) {
-		codes = codes + "," + firstSegment.operating.carrierCode;
+		operating = firstSegment.operating.carrierCode;
 	}
-	return codes;
+	return {carrier, operating};
 }
 
 export const ItineraryInfo = ({ itinerary }: ItineraryInfoProps) => {
@@ -86,7 +82,9 @@ export const ItineraryInfo = ({ itinerary }: ItineraryInfoProps) => {
 
 	const [departureAirport, setDepartureAirport] = useState('');
 	const [arrivalAirport, setArrivalAirport] = useState('');
-	const [airlinesInfo, setAirlinesInfo] = useState<AirlinesInfo | null>(null);
+	
+	const [carrierAirline, setCarrierAirline] = useState<Airline | undefined>(undefined);
+	const [operatingAirline, setOperatingAirline] = useState<Airline | undefined>(undefined);
 
 	const [loading, setLoading] = useState(false);
 
@@ -95,56 +93,49 @@ export const ItineraryInfo = ({ itinerary }: ItineraryInfoProps) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			setLoading(true);
-			let options: Option[] = [];
 
-			const { out: outDeparture, source: sourceDeparture } = getAirport(firstSegment.departure.iataCode);
-			const { out: outArrival, source: sourceArrival } = getAirport(lastSegment.arrival.iataCode);
-			const { out: outAirlines, source: sourceAirlines } = getAirlines(airlinesCodes);
+			const outDeparture = getAirport(firstSegment.departure.iataCode);
+			const outArrival = getAirport(lastSegment.arrival.iataCode);
+			const outAirlineCarrier = getAirlines(airlinesCodes.carrier);
+			const outAirlineOperating = getAirlines(airlinesCodes.operating);
 
 			try {
 				const resDeparture = await outDeparture.catch(err => {
 					console.error("Failed to fetch departure data", err);
 					return null;
 				});
-				if (resDeparture && !resDeparture.data.code) {
-					options = resDeparture.data;
-					const airport = options.find(option => option.iataCode === firstSegment.departure.iataCode);
+				if (resDeparture) {
+					const airport = resDeparture;
 					if (airport) {
 						setDepartureAirport(`${airport.name} (${airport.iataCode})`);
 					}
 				}
 
-
 				const resArrival = await outArrival.catch(err => {
 					console.error("Failed to fetch arrival data", err);
 					return null; 
 				});
-				if (resArrival && !resArrival.data.code) {
-					options = resArrival.data;
-					const airport = options.find(option => option.iataCode === lastSegment.arrival.iataCode);
+				if (resArrival) {
+					const airport = resArrival;
 					if (airport) {
 						setArrivalAirport(`${airport.name} (${airport.iataCode})`);
 					}
 				}
 
-
-				const resAirlines = await outAirlines.catch(err => {
+				const resAirlinesCarrier = await outAirlineCarrier.catch(err => {
 					console.error("Failed to fetch airline data", err);
 					return null;
 				});
-				if (resAirlines && !resAirlines.data.code) {
-					const airlines: Airline[] = resAirlines.data;
-					if (airlines.length === 2) {
-						setAirlinesInfo({
-							carrier: airlines[0].commonName,
-							operating: airlines[1].commonName,
-						});
-					} else {
-						setAirlinesInfo({
-							carrier: airlines[0].commonName,
-							operating: null,
-						});
-					}
+				if (resAirlinesCarrier) {
+					setCarrierAirline(resAirlinesCarrier);
+				}
+
+				const resAirlinesOperating = await outAirlineOperating.catch(err => {
+					console.error("Failed to fetch airline data", err);
+					return null;
+				});
+				if (resAirlinesOperating) {
+					setOperatingAirline(resAirlinesOperating);
 				}
 			} catch (err) {
 				if (!axios.isCancel(err)) {
@@ -153,12 +144,6 @@ export const ItineraryInfo = ({ itinerary }: ItineraryInfoProps) => {
 			} finally {
 				setLoading(false);
 			}
-
-			return () => {
-				sourceDeparture.cancel();
-				sourceArrival.cancel();
-				sourceAirlines.cancel();
-			};
 		};
 
 		fetchData();
@@ -190,7 +175,7 @@ export const ItineraryInfo = ({ itinerary }: ItineraryInfoProps) => {
 				</Typography>
 				{/* Carrier Information */}
 				<Typography sx={{ fontStyle: 'italic', marginTop: 1 }}>
-					<strong>Carrier:</strong> {airlinesInfo?.carrier} {airlinesInfo?.operating ? `Operating: ${airlinesInfo.operating}` : ``}
+					<strong>Carrier:</strong> {carrierAirline?.commonName} {operatingAirline ? operatingAirline.iataCode !== carrierAirline?.iataCode? `Operating: ${operatingAirline.commonName}` :``:``}
 				</Typography>
 			</Box>
 			<Box sx={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
