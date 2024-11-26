@@ -1,0 +1,17 @@
+services:
+  backend:
+    build:
+      context: ./flightsearchback
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - CLIENT_ID
+      - CLIENT_SECRET
+
+  frontend:
+    build: 
+      context: ./flightsearchfront
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
