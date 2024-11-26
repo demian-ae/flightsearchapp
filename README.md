@@ -35,16 +35,10 @@ CLIENT_SECRET=your_client_secret
 ```
 Replace `your_client_id` and `your_client_secret` with your actual Amadeus API credentials.
 
-### Step 3: Build the Docker Images
-Use Docker Compose to build the necessary images:
+### Step 3: Start the Application
+Use Docker Compose to Run and build the necessary images:
 ```bash
-docker-compose build
-```
-
-### Step 4: Start the Application
-Run the application with Docker Compose:
-```bash
-docker-compose up
+docker-compose up --build
 ```
 
 The application will start and be accessible at:
