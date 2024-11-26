@@ -23,8 +23,8 @@ This repository contains a Flight Search Application that uses the [Amadeus API]
 ### Step 1: Clone the Repository
 Clone the project to your local machine:
 ```bash
-git clone <repository-url>
-cd <repository-folder>
+git clone https://github.com/demian-ae/flightsearchapp
+cd flightsearchapp
 ```
 
 ### Step 2: Create the `.env` File
