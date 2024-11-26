@@ -32,7 +32,7 @@ export const getAirport = async (iataCode: string): Promise<AmadeusLocation | un
 	const source = CancelToken.source();
 
 	try {
-		const response: AxiosResponse<AmadeusLocation[]> = await axios.get(`/airports?keyword=${searchQuery}&subType=AIRPORT`, {
+		const response: AxiosResponse<AmadeusLocation[]> = await axios.get(`http://localhost:8081/api/v1/airports?keyword=${searchQuery}&subType=AIRPORT`, {
 			cancelToken: source.token,
 		});
 
@@ -65,7 +65,7 @@ export const getLocations = (keywords: string): GetAmadeusDataResult => {
 
 	// GET request with all params we need
 	const out = axios.get(
-		`/airports?keyword=${searchQuery}&subType=AIRPORT,CITY`,
+		`http://localhost:8081/api/v1/airports?keyword=${searchQuery}&subType=AIRPORT,CITY`,
 		{
 			cancelToken: source.token
 		}
@@ -89,7 +89,7 @@ export const getAirlines = async (iataCode: string | null): Promise<Airline | un
 	const source = CancelToken.source();
 
 	try {
-		const response: AxiosResponse<Airline[]> = await axios.get(`/airlines?airlineCodes=${iataCode}`, {
+		const response: AxiosResponse<Airline[]> = await axios.get(`http://localhost:8081/api/v1/airlines?airlineCodes=${iataCode}`, {
 			cancelToken: source.token,
 		});
 
@@ -135,7 +135,7 @@ export const getFlightOffers = (
 		...(params.returnDate ? { returnDate: params.returnDate } : {}),
 	}).toString();
 
-	const out = axios.get(`/flights?${query}`, { cancelToken: source.token });
+	const out = axios.get(`http://localhost:8081/api/v1/flights?${query}`, { cancelToken: source.token });
 
 	return { out, source };
 };
