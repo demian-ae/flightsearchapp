@@ -1,0 +1,23 @@
+# Gradle files and directories
+.gradle
+build
+!build/libs/*.jar  # Allow the built JAR file to be included
+!build/resources  # Allow resources if needed
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# IDE-specific files
+.idea
+.vscode
+*.iml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env

@@ -1,4 +1,13 @@
 services:
+  frontend:
+    build: 
+      context: ./flightsearchfront
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
   backend:
     build:
       context: ./flightsearchback
@@ -8,10 +17,4 @@ services:
     environment:
       - CLIENT_ID
       - CLIENT_SECRET
-
-  frontend:
-    build: 
-      context: ./flightsearchfront
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
+      - SPRING_PROFILES_ACTIVE=dev
